@@ -1,0 +1,31 @@
+[package]
+name = "stun-server"
+version = "0.1.0"
+authors = ["David DiMaria <info@collectivesessions.com>"]
+description = "A simple STUN server written in Rust"
+readme = "README.md"
+keywords = ["stun", "webrtc", "server", "client"]
+repository = "https://github.com/ddimaria/stun-server"
+documentation = "https://docs.rs/stun-server"
+license = "MIT"
+edition = "2018"
+
+[dependencies]
+bytes = "1.1.0"
+clap = { version = "3.1.6", features = ["derive"] }
+dotenv = "0.15.0"
+envy = "0.4"
+lazy_static = "1.4.0"
+log = "0.4.14"
+pretty_env_logger = "0.4.0"
+rand = "0.8.5"
+serde = "1.0.136"
+serde_derive = "1.0.136"
+thiserror = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+
+[build-dependencies]
+
+[dev-dependencies]
+
+[features]
