@@ -1,4 +1,7 @@
+use crate::error::Result;
+use crate::message::transaction_id::TransactionId;
 use crate::utils::Address;
+use bytes::{Bytes, BytesMut};
 
 /// After the STUN header are zero or more attributes. Each attribute MUST be
 /// TLV encoded, with a 16-bit type, 16-bit length, and value. Each STUN
@@ -38,7 +41,7 @@ use crate::utils::Address;
 /// The rest of this section describes the format of the various attributes defined
 /// in this specification.
 #[derive(Eq, PartialEq, Debug)]
-pub enum Attribute {
+pub(crate) enum Attribute {
     Username(String),
     Password(String),
     MessageIntegrity([u8; 20]),
@@ -46,4 +49,14 @@ pub enum Attribute {
     FingerPrint(u32),
     XorMappedAddress(Address),
     UnknownAttributes(Vec<u16>),
+}
+
+impl Attribute {
+    pub(crate) fn encode(&self, buf: &mut BytesMut, transaction_id: &TransactionId) -> u16 {
+        0
+    }
+
+    pub(crate) fn decode(buf: &Bytes, transaction_id: &TransactionId) -> Result<Self> {
+        Ok(Attribute::UnknownAttributes(vec![]))
+    }
 }

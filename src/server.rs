@@ -5,7 +5,6 @@ use crate::{
     message::class::Class,
     message::message::Message,
     message::method::Method,
-    message::transaction_id::TransactionId,
     utils::Address,
 };
 use bytes::{Bytes, BytesMut};
@@ -39,12 +38,9 @@ pub(crate) async fn server() -> Result<()> {
 
         match (message.class, message.method) {
             (Class::Request, Method::Binding) => {
-                let message = Message {
-                    class: Class::SuccessResponse,
-                    method: Method::Binding,
-                    transaction_id: TransactionId::new(),
-                    attributes: vec![Attribute::XorMappedAddress(Address::get_address(address))],
-                };
+                let message = Message::binding_response(vec![Attribute::XorMappedAddress(
+                    Address::get_address(address),
+                )]);
 
                 log::info!("sending message to client: {:?}", message);
 

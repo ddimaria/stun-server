@@ -54,6 +54,15 @@ impl Message {
         }
     }
 
+    pub(crate) fn binding_response(attributes: Vec<Attribute>) -> Message {
+        Message {
+            class: Class::SuccessResponse,
+            method: Method::Binding,
+            transaction_id: TransactionId::new(),
+            attributes,
+        }
+    }
+
     pub(crate) fn encode(&self, buf: &mut BytesMut) {
         let mut header: u16 = 0x0000;
         let transaction_id = &self.transaction_id.0;
@@ -68,10 +77,11 @@ impl Message {
         buf.put_u16(header);
 
         // encode the body length
-        let body_bytes = BytesMut::with_capacity(256);
-        let message_length: u16 = 0;
+        let mut body_bytes = BytesMut::with_capacity(256);
+        let mut message_length: u16 = 0;
+
         for attribute in &self.attributes {
-            // message_length += encode_attribute(attribute, &mut body_bytes, transaction_id);
+            message_length += attribute.encode(&mut body_bytes, &self.transaction_id);
         }
 
         // add message message length to the buffer
@@ -118,13 +128,11 @@ impl Message {
             )));
         }
 
-        // only decode attributes if they exist
-        if buffer.remaining() >= message_length {
-            let reserved = buffer.remaining() - message_length;
-            while buffer.remaining() > reserved {
-                // let attribute = decode_attribute(buffer, &transaction_id_bytes)?;
-                // attributes.push(attribute);
-            }
+        // decode attributes if they exist
+        let reserved = buffer.remaining() - message_length;
+        while buffer.remaining() > reserved {
+            let attribute = Attribute::decode(buffer, &transaction_id)?;
+            attributes.push(attribute);
         }
 
         // decode
@@ -134,7 +142,8 @@ impl Message {
             transaction_id,
             attributes,
         };
-        Result::Ok(msg)
+
+        Ok(msg)
     }
 }
 
