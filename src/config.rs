@@ -14,18 +14,18 @@ use lazy_static::lazy_static;
 use serde_derive::Deserialize;
 
 #[derive(Deserialize, Debug)]
-pub struct Config {
+pub(crate) struct Config {
     pub(crate) client: String,
     pub(crate) server: String,
 }
 
 // Throw the Config struct into a CONFIG lazy_static to avoid multiple processing
 lazy_static! {
-    pub static ref CONFIG: Config = config().unwrap_or_else(|error| panic!("{}", error));
+    pub(crate) static ref CONFIG: Config = config().unwrap_or_else(|error| panic!("{}", error));
 }
 
 /// Use envy to inject dotenv and env vars into the Config struct
-pub fn config() -> Result<Config> {
+pub(crate) fn config() -> Result<Config> {
     dotenv().ok();
     Ok(envy::from_env::<Config>()?)
 }

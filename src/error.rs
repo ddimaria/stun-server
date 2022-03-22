@@ -8,10 +8,10 @@ use envy::Error as EnvyError;
 use log::error;
 use std::net::AddrParseError;
 
-pub type Result<T> = std::result::Result<T, Error>;
+pub(crate) type Result<T> = std::result::Result<T, Error>;
 
 #[derive(thiserror::Error, Debug)]
-pub enum Error {
+pub(crate) enum Error {
     #[error("Invalid argument: {0}")]
     Arguments(String),
 

@@ -21,7 +21,7 @@ use std::convert::TryInto;
 /// port, the transaction IDs in requests sent by the agent have no relationship to
 /// the transaction IDs in requests received by the agent.
 #[derive(Debug, PartialEq)]
-pub struct TransactionId(pub [u8; 12]);
+pub(crate) struct TransactionId(pub [u8; 12]);
 
 impl TransactionId {
     pub(crate) fn new() -> Self {

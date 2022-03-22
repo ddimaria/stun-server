@@ -160,15 +160,28 @@ mod tests {
         Message::decode(&mut buffer).unwrap()
     }
 
-    #[test]
-    fn it_encodes_a_binding_request() {
-        let mut buf = BytesMut::new();
-        let message = Message {
+    pub(crate) fn binding_request() -> Message {
+        Message {
             class: Class::Request,
             method: Method::Binding,
             transaction_id: TransactionId([176, 184, 63, 0, 218, 12, 162, 195, 40, 225, 242, 133]),
             attributes: vec![],
-        };
+        }
+    }
+
+    pub(crate) fn binding_response() -> Message {
+        Message {
+            class: Class::SuccessResponse,
+            method: Method::Binding,
+            transaction_id: TransactionId([195, 62, 98, 104, 87, 32, 192, 142, 216, 241, 121, 136]),
+            attributes: vec![],
+        }
+    }
+
+    #[test]
+    fn it_encodes_a_binding_request() {
+        let mut buf = BytesMut::new();
+        let message = binding_request();
         message.encode(&mut buf);
 
         let mut expected_buf = BytesMut::with_capacity(0);
@@ -180,12 +193,7 @@ mod tests {
     #[test]
     fn it_encodes_a_binding_response() {
         let mut buf = BytesMut::new();
-        let message = Message {
-            class: Class::SuccessResponse,
-            method: Method::Binding,
-            transaction_id: TransactionId([195, 62, 98, 104, 87, 32, 192, 142, 216, 241, 121, 136]),
-            attributes: vec![],
-        };
+        let message = binding_response();
         message.encode(&mut buf);
 
         let mut expected_buf = BytesMut::with_capacity(0);
@@ -197,12 +205,7 @@ mod tests {
     #[test]
     fn it_decodes_a_binding_request() {
         let message = decode_message(BINDING_REQUEST);
-        let expected = Message {
-            class: Class::Request,
-            method: Method::Binding,
-            transaction_id: TransactionId([176, 184, 63, 0, 218, 12, 162, 195, 40, 225, 242, 133]),
-            attributes: vec![],
-        };
+        let expected = binding_request();
 
         assert_eq!(message, expected);
     }
@@ -210,12 +213,7 @@ mod tests {
     #[test]
     fn it_decodes_a_binding_response() {
         let message = decode_message(BINDING_RESPONSE);
-        let expected = Message {
-            class: Class::SuccessResponse,
-            method: Method::Binding,
-            transaction_id: TransactionId([195, 62, 98, 104, 87, 32, 192, 142, 216, 241, 121, 136]),
-            attributes: vec![],
-        };
+        let expected = binding_response();
 
         assert_eq!(message, expected);
     }

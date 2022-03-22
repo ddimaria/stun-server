@@ -39,7 +39,7 @@ pub(crate) async fn server() -> Result<()> {
         match (message.class, message.method) {
             (Class::Request, Method::Binding) => {
                 let message = Message::binding_response(vec![Attribute::XorMappedAddress(
-                    Address::get_address(address),
+                    Address::parse_address(address),
                 )]);
 
                 log::info!("sending message to client: {:?}", message);

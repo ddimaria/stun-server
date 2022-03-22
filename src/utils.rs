@@ -42,7 +42,7 @@ impl Address {
         }
     }
 
-    pub(crate) fn get_address(socket_addr: SocketAddr) -> Address {
+    pub(crate) fn parse_address(socket_addr: SocketAddr) -> Address {
         match socket_addr {
             SocketAddr::V4(address) => Address::ipv4(address.ip().octets(), address.port()),
             SocketAddr::V6(address) => Address::ipv6(address.ip().octets(), address.port()),
