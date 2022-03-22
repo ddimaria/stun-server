@@ -25,8 +25,6 @@ async fn main() -> Result<()> {
 
     let args = Args::parse();
 
-    println!("args {:?}!", args);
-
     match args.r#type.as_ref() {
         "server" => server().await,
         "client" => client().await,

@@ -25,7 +25,9 @@ impl Method {
     pub(crate) fn encode(&self, mut header: u16) -> u16 {
         let method: u16 = self.into();
         let method = method & 0xFFF;
-        header = header | (method & 0x000F) | ((method & 0x0070) << 1) | ((method & 0x0F80) << 2);
+        header = header | (method & 0x000F); // M0-M3
+        header = header | ((method & 0x0070) << 1); // M4-M6
+        header = header | ((method & 0x0F80) << 2); // M7-M11
         header
     }
 

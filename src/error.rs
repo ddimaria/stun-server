@@ -15,14 +15,14 @@ pub(crate) enum Error {
     #[error("Invalid argument: {0}")]
     Arguments(String),
 
-    #[error("{0}.  Make sure you copied .env.example to .env")]
-    Config(String),
-
     #[error("Error sending the binding request: {0}")]
     BindingRequest(String),
 
     #[error("Error sending the binding response: {0}")]
     BindingResponse(String),
+
+    #[error("{0}.  Make sure you copied .env.example to .env")]
+    Config(String),
 
     #[error("Error decoding: {0}.")]
     Decode(String),

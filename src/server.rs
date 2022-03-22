@@ -12,17 +12,17 @@ use std::net::SocketAddr;
 use tokio::net::UdpSocket;
 
 pub(crate) async fn server() -> Result<()> {
-    let addr: SocketAddr = (*CONFIG).server.parse()?;
-    let socket = UdpSocket::bind(addr)
+    let server_addr: SocketAddr = (*CONFIG).server.parse()?;
+    let socket = UdpSocket::bind(server_addr)
         .await
         .map_err(|e| Error::Startup(e.to_string()))?;
 
-    log::info!("Started stun server on {}", addr);
+    log::info!("Started stun server on {}", server_addr);
 
     let mut buf = [0u8; 1024];
 
     loop {
-        let (bytes_received, address) = socket
+        let (bytes_received, client_address) = socket
             .recv_from(&mut buf)
             .await
             .map_err(|e| Error::Receive(e.to_string()))?;
@@ -32,24 +32,25 @@ pub(crate) async fn server() -> Result<()> {
         log::info!(
             "received {} bytes from {}: {:?}",
             bytes_received,
-            address,
+            client_address,
             message
         );
 
         match (message.class, message.method) {
             (Class::Request, Method::Binding) => {
                 let message = Message::binding_response(vec![Attribute::XorMappedAddress(
-                    Address::parse_address(address),
+                    Address::parse_address(client_address),
                 )]);
 
                 log::info!("sending message to client: {:?}", message);
 
+                // encode the binding response
                 let mut buf = BytesMut::new();
                 message.encode(&mut buf);
 
                 // send the encoded binding response to the client
                 socket
-                    .send_to(&mut buf.as_ref(), address)
+                    .send_to(&mut buf.as_ref(), client_address)
                     .await
                     .map_err(|e| Error::BindingResponse(e.to_string()))?;
             }

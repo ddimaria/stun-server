@@ -1,29 +1,12 @@
-use std::net::SocketAddr;
+use crate::error::{Error, Result};
+use std::{convert::TryFrom, net::SocketAddr};
 
 #[derive(Debug, Eq, PartialEq)]
-pub struct Address {
+pub(crate) struct Address {
     pub address: Vec<u8>,
     pub port: u16,
     pub ip_kind: IPKind,
 }
-
-// impl From<u16> for Attribute {
-//     fn from(value: u16) -> Attribute {
-//         match value {
-//             0x0006 => Attribute::Username,
-//             0x0007 => Attribute::Password,
-//             0x0008 => Attribute::MessageIntegrity(),
-//             0x0009 => Attribute::ErrorCode {
-//                 code: 0,
-//                 reason: "",
-//             },
-//             0x000A => Attribute::UnknownAttributes(),
-//             0x0020 => Attribute::XorMappedAddress(),
-//             0x8028 => Attribute::FingerPrint(),
-//             _ => Attribute::UnknownAttributes(),
-//         }
-//     }
-// }
 
 impl Address {
     pub(crate) fn ipv4(address: [u8; 4], port: u16) -> Address {
@@ -50,8 +33,17 @@ impl Address {
     }
 }
 
+impl TryFrom<String> for Address {
+    type Error = Error;
+
+    fn try_from(value: String) -> Result<Address> {
+        let address: SocketAddr = value.parse()?;
+        Ok(Address::parse_address(address))
+    }
+}
+
 #[derive(Debug, Eq, PartialEq)]
-pub enum IPKind {
+pub(crate) enum IPKind {
     IPv4,
     IPv6,
 }

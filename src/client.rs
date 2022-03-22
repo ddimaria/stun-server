@@ -26,6 +26,7 @@ pub(crate) async fn client() -> Result<()> {
 
     log::info!("sending binding request to the server: {:?}", message);
 
+    // encode the binding request
     let mut bytes_mut = BytesMut::new();
     message.encode(&mut bytes_mut);
 

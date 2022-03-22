@@ -1,7 +1,9 @@
+use std::convert::{TryFrom, TryInto};
+
 use crate::error::Result;
 use crate::message::transaction_id::TransactionId;
 use crate::utils::Address;
-use bytes::{Bytes, BytesMut};
+use bytes::{Buf, Bytes, BytesMut};
 
 /// After the STUN header are zero or more attributes. Each attribute MUST be
 /// TLV encoded, with a 16-bit type, 16-bit length, and value. Each STUN
@@ -44,11 +46,38 @@ use bytes::{Bytes, BytesMut};
 pub(crate) enum Attribute {
     Username(String),
     Password(String),
-    MessageIntegrity([u8; 20]),
     ErrorCode { code: u32, reason: String },
-    FingerPrint(u32),
+    FingerPrint(String),
     XorMappedAddress(Address),
     UnknownAttributes(Vec<u16>),
+}
+
+impl From<&mut BytesMut> for Attribute {
+    fn from(buf: &mut BytesMut) -> Attribute {
+        let code = buf.get_u16();
+        let _message_length = buf.get_u16();
+        let value_32: Vec<u8> = [
+            buf.get_u8().to_be_bytes(),
+            buf.get_u8().to_be_bytes(),
+            buf.get_u8().to_be_bytes(),
+            buf.get_u8().to_be_bytes(),
+        ]
+        .concat();
+        let value = String::from_utf8(value_32).unwrap();
+
+        match code {
+            0x0006 => Attribute::Username(value),
+            0x0007 => Attribute::Password(value),
+            0x0009 => Attribute::ErrorCode {
+                code: 0,
+                reason: value,
+            },
+            0x000A => Attribute::UnknownAttributes(vec![code]),
+            0x0020 => Attribute::XorMappedAddress(Address::try_from(value).unwrap()),
+            0x8028 => Attribute::FingerPrint(value),
+            _ => Attribute::UnknownAttributes(vec![code]),
+        }
+    }
 }
 
 impl Attribute {

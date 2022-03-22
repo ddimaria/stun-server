@@ -14,6 +14,9 @@ use bytes::{Buf, BufMut, Bytes, BytesMut};
 /// on the same port.
 pub(crate) const MAGIC_COOKIE: u32 = 0x2112A442;
 
+/// All STUN messages MUST start with a 20-byte header followed by zero or more
+/// Attributes. The STUN header contains a STUN message type, magic cookie,
+/// transaction ID, and message length.
 pub(crate) const MESSAGE_HEADER_LENGTH: usize = 20;
 
 /// STUN messages are encoded in binary using network-oriented format (most
@@ -77,14 +80,14 @@ impl Message {
         buf.put_u16(header);
 
         // encode the body length
-        let mut body_bytes = BytesMut::with_capacity(256);
+        let mut body = BytesMut::with_capacity(256);
         let mut message_length: u16 = 0;
 
         for attribute in &self.attributes {
-            message_length += attribute.encode(&mut body_bytes, &self.transaction_id);
+            message_length += attribute.encode(&mut body, &self.transaction_id);
         }
 
-        // add message message length to the buffer
+        // add message length to the buffer
         buf.put_u16(message_length);
 
         // add magic cookie to the buffer
@@ -93,8 +96,8 @@ impl Message {
         // add transaction id to the buffer
         buf.put_slice(transaction_id);
 
-        // body bytes
-        buf.put_slice(body_bytes.as_ref());
+        // add the encoded body to the buffer
+        buf.put_slice(body.as_ref());
     }
 
     pub(crate) fn decode(buffer: &mut Bytes) -> Result<Message> {
@@ -128,9 +131,10 @@ impl Message {
             )));
         }
 
-        // decode attributes if they exist
-        let reserved = buffer.remaining() - message_length;
-        while buffer.remaining() > reserved {
+        // decode attributes (if they're are any)
+        let attributes_length = buffer.remaining() - message_length;
+
+        while buffer.remaining() > attributes_length {
             let attribute = Attribute::decode(buffer, &transaction_id)?;
             attributes.push(attribute);
         }
