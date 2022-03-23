@@ -67,17 +67,17 @@ impl Message {
     }
 
     pub(crate) fn encode(&self, buf: &mut BytesMut) {
-        let mut header: u16 = 0x0000;
+        let header: u16 = 0x0000;
         let transaction_id = &self.transaction_id.0;
 
         // encode message class
-        header = self.class.encode(header);
+        let class = self.class.encode();
 
         // encode message method
-        header = self.method.encode(header);
+        let method = self.method.encode(header);
 
         // add class and body to the buffer
-        buf.put_u16(header);
+        buf.put_u16(class + method);
 
         // encode the body length
         let mut body = BytesMut::with_capacity(256);
@@ -152,12 +152,13 @@ impl Message {
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
 
-    const BINDING_REQUEST: &[u8; 20] =
+    pub(crate) const BINDING_REQUEST: &[u8; 20] =
         b"\0\x01\0\0!\x12\xa4B\xb0\xb8?\0\xda\x0c\xa2\xc3(\xe1\xf2\x85";
-    const BINDING_RESPONSE: &[u8; 20] = b"\x01\x01\0\0!\x12\xa4B\xc3>bhW \xc0\x8e\xd8\xf1y\x88";
+    pub(crate) const BINDING_RESPONSE: &[u8; 20] =
+        b"\x01\x01\0\0!\x12\xa4B\xc3>bhW \xc0\x8e\xd8\xf1y\x88";
 
     pub(crate) fn decode_message(buffer: &[u8; 20]) -> Message {
         let mut buffer = Bytes::copy_from_slice(buffer);
@@ -184,26 +185,26 @@ mod tests {
 
     #[test]
     fn it_encodes_a_binding_request() {
-        let mut buf = BytesMut::new();
+        let mut buffer = BytesMut::new();
         let message = binding_request();
-        message.encode(&mut buf);
+        message.encode(&mut buffer);
 
-        let mut expected_buf = BytesMut::with_capacity(0);
-        expected_buf.extend_from_slice(BINDING_REQUEST);
+        let mut expected_buffer = BytesMut::with_capacity(0);
+        expected_buffer.extend_from_slice(BINDING_REQUEST);
 
-        assert_eq!(buf, expected_buf);
+        assert_eq!(buffer, expected_buffer);
     }
 
     #[test]
     fn it_encodes_a_binding_response() {
-        let mut buf = BytesMut::new();
+        let mut buffer = BytesMut::new();
         let message = binding_response();
-        message.encode(&mut buf);
+        message.encode(&mut buffer);
 
-        let mut expected_buf = BytesMut::with_capacity(0);
-        expected_buf.extend_from_slice(BINDING_RESPONSE);
+        let mut expected_buffer = BytesMut::with_capacity(0);
+        expected_buffer.extend_from_slice(BINDING_RESPONSE);
 
-        assert_eq!(buf, expected_buf);
+        assert_eq!(buffer, expected_buffer);
     }
 
     #[test]

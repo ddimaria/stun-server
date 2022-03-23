@@ -28,11 +28,12 @@ pub(crate) enum Class {
 }
 
 impl Class {
-    pub(crate) fn encode(&self, mut header: u16) -> u16 {
+    pub(crate) fn encode(&self) -> u16 {
         let class: u16 = self.into();
-        header = header | ((class & 0b10) << 7); // C0
-        header = header | ((class & 0b01) << 4); // C1
-        header
+        let class_part_0 = (class & 0x1) << 4; // C0
+        let class_part_1 = (class & 0x2) << 7; // C1
+
+        class_part_0 + class_part_1
     }
 
     pub(crate) fn decode(value: u16) -> Result<Self> {
@@ -48,7 +49,7 @@ impl TryFrom<u16> for Class {
     type Error = Error;
 
     fn try_from(value: u16) -> Result<Class> {
-        match value & 0x03 {
+        match value {
             0b00 => Ok(Class::Request),
             0b01 => Ok(Class::Indication),
             0b10 => Ok(Class::SuccessResponse),
@@ -67,7 +68,46 @@ impl Into<u16> for &Class {
             Class::Request => 0b00,
             Class::Indication => 0b01,
             Class::SuccessResponse => 0b10,
-            Class::FailureResponse => 0b1,
+            Class::FailureResponse => 0b11,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    const BINGING_REQUEST: u16 = 0b0000000000000000;
+    const BINGING_INDICATION_RESPONSE: u16 = 0b0000000000010001;
+    const BINGING_SUCCESS: u16 = 0b0000000100000001;
+    const BINGING_FAILURE_RESPONSE: u16 = 0b0000000100010001;
+
+    #[test]
+    fn it_encodes_all_class() {
+        let encoded = Class::Request.encode();
+        assert_eq!(encoded, BINGING_REQUEST);
+
+        let encoded = Class::Indication.encode();
+        assert_eq!(encoded, BINGING_INDICATION_RESPONSE);
+
+        let encoded = Class::SuccessResponse.encode();
+        assert_eq!(encoded, BINGING_SUCCESS);
+
+        let encoded = Class::FailureResponse.encode();
+        assert_eq!(encoded, BINGING_FAILURE_RESPONSE);
+    }
+
+    #[test]
+    fn it_decodes_all_class() {
+        let decoded = Class::decode(BINGING_REQUEST).unwrap();
+        assert_eq!(decoded, Class::Request);
+
+        let decoded = Class::decode(BINGING_INDICATION_RESPONSE).unwrap();
+        assert_eq!(decoded, Class::Indication);
+
+        let decoded = Class::decode(BINGING_SUCCESS).unwrap();
+        assert_eq!(decoded, Class::SuccessResponse);
+
+        let decoded = Class::decode(BINGING_FAILURE_RESPONSE).unwrap();
+        assert_eq!(decoded, Class::FailureResponse);
     }
 }

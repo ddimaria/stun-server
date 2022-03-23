@@ -1,6 +1,6 @@
 use std::convert::{TryFrom, TryInto};
 
-use crate::error::Result;
+use crate::error::{Error, Result};
 use crate::message::transaction_id::TransactionId;
 use crate::utils::Address;
 use bytes::{Buf, Bytes, BytesMut};
@@ -53,14 +53,14 @@ pub(crate) enum Attribute {
 }
 
 impl From<&mut BytesMut> for Attribute {
-    fn from(buf: &mut BytesMut) -> Attribute {
-        let code = buf.get_u16();
-        let _message_length = buf.get_u16();
+    fn from(buffer: &mut BytesMut) -> Attribute {
+        let code = buffer.get_u16();
+        let _message_length = buffer.get_u16();
         let value_32: Vec<u8> = [
-            buf.get_u8().to_be_bytes(),
-            buf.get_u8().to_be_bytes(),
-            buf.get_u8().to_be_bytes(),
-            buf.get_u8().to_be_bytes(),
+            buffer.get_u8().to_be_bytes(),
+            buffer.get_u8().to_be_bytes(),
+            buffer.get_u8().to_be_bytes(),
+            buffer.get_u8().to_be_bytes(),
         ]
         .concat();
         let value = String::from_utf8(value_32).unwrap();
@@ -81,11 +81,11 @@ impl From<&mut BytesMut> for Attribute {
 }
 
 impl Attribute {
-    pub(crate) fn encode(&self, buf: &mut BytesMut, transaction_id: &TransactionId) -> u16 {
+    pub(crate) fn encode(&self, buffer: &mut BytesMut, transaction_id: &TransactionId) -> u16 {
         0
     }
 
-    pub(crate) fn decode(buf: &Bytes, transaction_id: &TransactionId) -> Result<Self> {
+    pub(crate) fn decode(buffer: &Bytes, transaction_id: &TransactionId) -> Result<Self> {
         Ok(Attribute::UnknownAttributes(vec![]))
     }
 }

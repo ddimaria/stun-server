@@ -44,7 +44,7 @@ impl Method {
 impl From<u16> for Method {
     fn from(value: u16) -> Method {
         match value {
-            1 => Method::Binding,
+            0x0001 => Method::Binding,
             _ => unimplemented!("Only binding methods are allowed"),
         }
     }
@@ -55,5 +55,35 @@ impl Into<u16> for &Method {
         match self {
             Method::Binding => 0x0001,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_encodes_a_binding_method() {
+        let method = Method::Binding;
+        let encoded: u16 = (&method).into();
+
+        assert_eq!(encoded, 0x0001);
+        println!("{:?}", encoded);
+    }
+
+    #[test]
+    fn it_decodes_a_binding_method() {
+        let method = 0x0001;
+        let decoded: Method = method.into();
+
+        assert_eq!(decoded, Method::Binding);
+        println!("{:?}", decoded);
+    }
+
+    #[test]
+    #[should_panic]
+    fn it_panics_when_decoding_a_non_binding_method() {
+        let method = 0x0002;
+        let _: Method = method.into();
     }
 }
