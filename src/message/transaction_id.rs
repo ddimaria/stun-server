@@ -29,15 +29,8 @@ impl TransactionId {
     }
 
     pub(crate) fn decode(buffer: &mut Bytes) -> Result<Self> {
-        let transaction_id = buffer
-            .get(0..12)
-            .ok_or_else(|| {
-                Error::Decode(
-                    "not enough bytes (12) in the buffer allocated to the transaction id".into(),
-                )
-            })?
-            .try_into()
-            .map_err(|_| Error::Decode("could not decode the transaction id".into()))?;
+        let mut transaction_id = [0u8; 12];
+        transaction_id.copy_from_slice(&buffer[0..12]);
 
         Ok(Self(transaction_id))
     }

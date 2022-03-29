@@ -17,18 +17,19 @@
 /// and indication are possible for that method. Extensions defining new methods
 /// MUST indicate which classes are permitted for that method.
 #[derive(Debug, PartialEq)]
-pub enum Method {
+pub(crate) enum Method {
     Binding,
 }
 
 impl Method {
-    pub(crate) fn encode(&self, mut header: u16) -> u16 {
+    pub(crate) fn encode(&self) -> u16 {
         let method: u16 = self.into();
         let method = method & 0xFFF;
-        header = header | (method & 0x000F); // M0-M3
-        header = header | ((method & 0x0070) << 1); // M4-M6
-        header = header | ((method & 0x0F80) << 2); // M7-M11
-        header
+        let method_part_0_3 = method & 0x000F; // M0-M3
+        let method_part_4_6 = method & 0x0070; // M4-M6
+        let method_part_7_11 = method & 0x0F80; // M7-M11
+
+        method_part_0_3 + method_part_4_6 + method_part_7_11
     }
 
     pub(crate) fn decode(value: u16) -> Self {
@@ -44,7 +45,7 @@ impl Method {
 impl From<u16> for Method {
     fn from(value: u16) -> Method {
         match value {
-            0x0001 => Method::Binding,
+            0x001 => Method::Binding,
             _ => unimplemented!("Only binding methods are allowed"),
         }
     }
@@ -53,7 +54,7 @@ impl From<u16> for Method {
 impl Into<u16> for &Method {
     fn into(self) -> u16 {
         match self {
-            Method::Binding => 0x0001,
+            Method::Binding => 0x001,
         }
     }
 }
@@ -63,21 +64,15 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_encodes_a_binding_method() {
-        let method = Method::Binding;
-        let encoded: u16 = (&method).into();
-
-        assert_eq!(encoded, 0x0001);
-        println!("{:?}", encoded);
+    fn it_encodes_all_methods() {
+        let encoded = Method::Binding.encode();
+        assert_eq!(encoded, (&Method::Binding).into());
     }
 
     #[test]
-    fn it_decodes_a_binding_method() {
-        let method = 0x0001;
-        let decoded: Method = method.into();
-
+    fn it_decodes_all_methods() {
+        let decoded = Method::decode((&Method::Binding).into());
         assert_eq!(decoded, Method::Binding);
-        println!("{:?}", decoded);
     }
 
     #[test]

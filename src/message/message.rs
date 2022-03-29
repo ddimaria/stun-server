@@ -67,14 +67,9 @@ impl Message {
     }
 
     pub(crate) fn encode(&self, buf: &mut BytesMut) {
-        let header: u16 = 0x0000;
         let transaction_id = &self.transaction_id.0;
-
-        // encode message class
         let class = self.class.encode();
-
-        // encode message method
-        let method = self.method.encode(header);
+        let method = self.method.encode();
 
         // add class and body to the buffer
         buf.put_u16(class + method);

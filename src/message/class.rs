@@ -76,13 +76,13 @@ impl Into<u16> for &Class {
 #[cfg(test)]
 mod tests {
     use super::*;
-    const BINGING_REQUEST: u16 = 0b0000000000000000;
-    const BINGING_INDICATION_RESPONSE: u16 = 0b0000000000010001;
-    const BINGING_SUCCESS: u16 = 0b0000000100000001;
-    const BINGING_FAILURE_RESPONSE: u16 = 0b0000000100010001;
+    const BINGING_REQUEST: u16 = 0b000000000;
+    const BINGING_INDICATION_RESPONSE: u16 = 0b000010000;
+    const BINGING_SUCCESS: u16 = 0b100000000;
+    const BINGING_FAILURE_RESPONSE: u16 = 0b100010000;
 
     #[test]
-    fn it_encodes_all_class() {
+    fn it_encodes_all_classes() {
         let encoded = Class::Request.encode();
         assert_eq!(encoded, BINGING_REQUEST);
 
@@ -97,7 +97,7 @@ mod tests {
     }
 
     #[test]
-    fn it_decodes_all_class() {
+    fn it_decodes_all_classes() {
         let decoded = Class::decode(BINGING_REQUEST).unwrap();
         assert_eq!(decoded, Class::Request);
 
