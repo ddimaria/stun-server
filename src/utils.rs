@@ -33,10 +33,10 @@ impl Address {
     }
 }
 
-impl TryFrom<String> for Address {
+impl TryFrom<&str> for Address {
     type Error = Error;
 
-    fn try_from(value: String) -> Result<Address> {
+    fn try_from(value: &str) -> Result<Address> {
         let address: SocketAddr = value.parse()?;
         Ok(Address::parse_address(address))
     }

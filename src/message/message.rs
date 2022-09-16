@@ -40,15 +40,15 @@ pub(crate) const MESSAGE_HEADER_LENGTH: usize = 20;
 /// |                                                               |
 /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #[derive(Debug, PartialEq)]
-pub(crate) struct Message {
+pub(crate) struct Message<'a> {
     pub(crate) class: Class,
     pub(crate) method: Method,
     pub(crate) transaction_id: TransactionId,
-    pub(crate) attributes: Vec<Attribute>,
+    pub(crate) attributes: Vec<Attribute<'a>>,
 }
 
-impl Message {
-    pub(crate) fn binding_request(attributes: Vec<Attribute>) -> Message {
+impl<'a> Message<'a> {
+    pub(crate) fn binding_request(attributes: Vec<Attribute<'a>>) -> Message<'a> {
         Message {
             class: Class::Request,
             method: Method::Binding,
@@ -155,12 +155,7 @@ pub(crate) mod tests {
     pub(crate) const BINDING_RESPONSE: &[u8; 20] =
         b"\x01\x01\0\0!\x12\xa4B\xc3>bhW \xc0\x8e\xd8\xf1y\x88";
 
-    pub(crate) fn decode_message(buffer: &[u8; 20]) -> Message {
-        let mut buffer = Bytes::copy_from_slice(buffer);
-        Message::decode(&mut buffer).unwrap()
-    }
-
-    pub(crate) fn binding_request() -> Message {
+    pub(crate) fn binding_request<'a>() -> Message<'a> {
         Message {
             class: Class::Request,
             method: Method::Binding,
@@ -169,7 +164,7 @@ pub(crate) mod tests {
         }
     }
 
-    pub(crate) fn binding_response() -> Message {
+    pub(crate) fn binding_response<'a>() -> Message<'a> {
         Message {
             class: Class::SuccessResponse,
             method: Method::Binding,
@@ -204,7 +199,8 @@ pub(crate) mod tests {
 
     #[test]
     fn it_decodes_a_binding_request() {
-        let message = decode_message(BINDING_REQUEST);
+        let mut bytes = Bytes::copy_from_slice(BINDING_REQUEST);
+        let message = Message::decode(&mut bytes).unwrap();
         let expected = binding_request();
 
         assert_eq!(message, expected);
@@ -212,7 +208,8 @@ pub(crate) mod tests {
 
     #[test]
     fn it_decodes_a_binding_response() {
-        let message = decode_message(BINDING_RESPONSE);
+        let mut bytes = Bytes::copy_from_slice(BINDING_RESPONSE);
+        let message = Message::decode(&mut bytes).unwrap();
         let expected = binding_response();
 
         assert_eq!(message, expected);
