@@ -1,7 +1,6 @@
-use crate::error::{Error, Result};
-use bytes::{Buf, Bytes};
+use crate::error::Result;
+use bytes::Bytes;
 use rand::Rng;
-use std::convert::TryInto;
 
 /// The transaction ID is a 96-bit identifier, used to uniquely identify STUN
 /// transactions. For request/response transactions, the transaction ID is
@@ -21,7 +20,7 @@ use std::convert::TryInto;
 /// port, the transaction IDs in requests sent by the agent have no relationship to
 /// the transaction IDs in requests received by the agent.
 #[derive(Debug, PartialEq)]
-pub(crate) struct TransactionId(pub [u8; 12]);
+pub struct TransactionId(pub [u8; 12]);
 
 impl TransactionId {
     pub(crate) fn new() -> Self {

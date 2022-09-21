@@ -40,15 +40,15 @@ pub(crate) const MESSAGE_HEADER_LENGTH: usize = 20;
 /// |                                                               |
 /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #[derive(Debug, PartialEq)]
-pub(crate) struct Message {
-    pub(crate) class: Class,
-    pub(crate) method: Method,
-    pub(crate) transaction_id: TransactionId,
-    pub(crate) attributes: Vec<Attribute>,
+pub struct Message<'a> {
+    pub class: Class,
+    pub method: Method,
+    pub transaction_id: TransactionId,
+    pub attributes: Vec<Attribute<'a>>,
 }
 
-impl Message {
-    pub(crate) fn binding_request(attributes: Vec<Attribute>) -> Message {
+impl<'a> Message<'a> {
+    pub fn binding_request(attributes: Vec<Attribute<'a>>) -> Message<'a> {
         Message {
             class: Class::Request,
             method: Method::Binding,
@@ -57,7 +57,7 @@ impl Message {
         }
     }
 
-    pub(crate) fn binding_response(attributes: Vec<Attribute>) -> Message {
+    pub fn binding_response(attributes: Vec<Attribute>) -> Message {
         Message {
             class: Class::SuccessResponse,
             method: Method::Binding,
@@ -66,7 +66,7 @@ impl Message {
         }
     }
 
-    pub(crate) fn encode(&self, buf: &mut BytesMut) {
+    pub fn encode(&self, buf: &mut BytesMut) {
         let transaction_id = &self.transaction_id.0;
         let class = self.class.encode();
         let method = self.method.encode();
@@ -95,7 +95,7 @@ impl Message {
         buf.put_slice(body.as_ref());
     }
 
-    pub(crate) fn decode(buffer: &mut Bytes) -> Result<Message> {
+    pub fn decode(buffer: &mut Bytes) -> Result<Message> {
         let mut attributes: Vec<Attribute> = Vec::new();
 
         // All STUN messages MUST start with a 20-byte header followed by zero or
@@ -155,12 +155,7 @@ pub(crate) mod tests {
     pub(crate) const BINDING_RESPONSE: &[u8; 20] =
         b"\x01\x01\0\0!\x12\xa4B\xc3>bhW \xc0\x8e\xd8\xf1y\x88";
 
-    pub(crate) fn decode_message(buffer: &[u8; 20]) -> Message {
-        let mut buffer = Bytes::copy_from_slice(buffer);
-        Message::decode(&mut buffer).unwrap()
-    }
-
-    pub(crate) fn binding_request() -> Message {
+    pub(crate) fn binding_request<'a>() -> Message<'a> {
         Message {
             class: Class::Request,
             method: Method::Binding,
@@ -169,7 +164,7 @@ pub(crate) mod tests {
         }
     }
 
-    pub(crate) fn binding_response() -> Message {
+    pub(crate) fn binding_response<'a>() -> Message<'a> {
         Message {
             class: Class::SuccessResponse,
             method: Method::Binding,
@@ -204,7 +199,8 @@ pub(crate) mod tests {
 
     #[test]
     fn it_decodes_a_binding_request() {
-        let message = decode_message(BINDING_REQUEST);
+        let mut encoded = Bytes::copy_from_slice(BINDING_REQUEST);
+        let message = Message::decode(&mut encoded).unwrap();
         let expected = binding_request();
 
         assert_eq!(message, expected);
@@ -212,7 +208,8 @@ pub(crate) mod tests {
 
     #[test]
     fn it_decodes_a_binding_response() {
-        let message = decode_message(BINDING_RESPONSE);
+        let mut encoded = Bytes::copy_from_slice(BINDING_RESPONSE);
+        let message = Message::decode(&mut encoded).unwrap();
         let expected = binding_response();
 
         assert_eq!(message, expected);

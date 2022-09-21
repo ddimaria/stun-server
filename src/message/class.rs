@@ -20,7 +20,7 @@ use std::convert::{TryFrom, TryInto};
 /// and indication are possible for that method. Extensions defining new methods
 /// MUST indicate which classes are permitted for that method.
 #[derive(Debug, PartialEq)]
-pub(crate) enum Class {
+pub enum Class {
     Request,
     Indication,
     SuccessResponse,

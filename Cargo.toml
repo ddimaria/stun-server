@@ -8,7 +8,7 @@ keywords = ["stun", "webrtc", "server", "client"]
 repository = "https://github.com/ddimaria/stun-server"
 documentation = "https://docs.rs/stun-server"
 license = "MIT"
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 bytes = "1.1.0"
@@ -27,5 +27,26 @@ tokio = { version = "1.0", features = ["full"] }
 [build-dependencies]
 
 [dev-dependencies]
+criterion = "0.3"
 
 [features]
+
+[profile.release]
+incremental = true
+
+[lib]
+name = "stun_server"
+path = "src/lib.rs"
+
+[[example]]
+name = "client"
+
+[[example]]
+name = "server"
+
+[[example]]
+name = "client_server"
+
+[[bench]]
+name = "main"
+harness = false

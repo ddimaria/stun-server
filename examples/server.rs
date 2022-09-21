@@ -1,4 +1,6 @@
-use crate::{
+use bytes::{Bytes, BytesMut};
+use std::net::SocketAddr;
+use stun_server::{
     config::CONFIG,
     error::{Error, Result},
     message::attribute::Attribute,
@@ -7,11 +9,18 @@ use crate::{
     message::method::Method,
     utils::Address,
 };
-use bytes::{Bytes, BytesMut};
-use std::net::SocketAddr;
 use tokio::net::UdpSocket;
 
-pub(crate) async fn server() -> Result<()> {
+#[allow(dead_code)]
+#[tokio::main]
+async fn main() -> Result<()> {
+    dotenv::dotenv().ok();
+    pretty_env_logger::init();
+
+    server().await
+}
+
+pub async fn server() -> Result<()> {
     let server_addr: SocketAddr = (*CONFIG).server.parse()?;
     let socket = UdpSocket::bind(server_addr)
         .await
