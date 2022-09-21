@@ -1,13 +1,9 @@
 #[path = "./client.rs"]
 mod client;
 
-#[path = "./server.rs"]
-mod server;
-
 use client::client;
-use server::server;
 
-use stun_server::error::Result;
+use stun_server::{error::Result, server::server};
 
 #[tokio::main]
 async fn main() -> Result<()> {
