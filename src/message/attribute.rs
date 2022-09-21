@@ -1,9 +1,9 @@
-use std::convert::{TryFrom, TryInto};
+// use std::convert::{TryFrom, TryInto};
 
-use crate::error::{Error, Result};
+use crate::error::Result;
 use crate::message::transaction_id::TransactionId;
 use crate::utils::Address;
-use bytes::{Buf, Bytes, BytesMut};
+use bytes::{Bytes, BytesMut};
 
 /// After the STUN header are zero or more attributes. Each attribute MUST be
 /// TLV encoded, with a 16-bit type, 16-bit length, and value. Each STUN
@@ -37,7 +37,7 @@ use bytes::{Buf, Bytes, BytesMut};
 /// attributes, which means that those attributes can be ignored by the STUN agent if
 /// it does not understand them.
 #[derive(Eq, PartialEq, Debug)]
-pub(crate) enum Attribute<'a> {
+pub enum Attribute<'a> {
     Username(&'a str),
     Password(&'a str),
     ErrorCode { code: u32, reason: &'a str },

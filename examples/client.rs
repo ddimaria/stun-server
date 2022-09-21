@@ -3,11 +3,20 @@ use std::net::SocketAddr;
 use bytes::{Bytes, BytesMut};
 use tokio::net::UdpSocket;
 
-use crate::{
+use stun_server::{
     config::CONFIG,
     error::{Error, Result},
     message::message::Message,
 };
+
+#[allow(dead_code)]
+#[tokio::main]
+async fn main() -> Result<()> {
+    dotenv::dotenv().ok();
+    pretty_env_logger::init();
+
+    client().await
+}
 
 pub async fn client() -> Result<()> {
     let client_addr: SocketAddr = (*CONFIG).client.parse()?;

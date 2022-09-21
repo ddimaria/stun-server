@@ -2,7 +2,7 @@ use crate::error::{Error, Result};
 use std::{convert::TryFrom, net::SocketAddr};
 
 #[derive(Debug, Eq, PartialEq)]
-pub(crate) struct Address {
+pub struct Address {
     pub address: Vec<u8>,
     pub port: u16,
     pub ip_kind: IPKind,
@@ -25,7 +25,7 @@ impl Address {
         }
     }
 
-    pub(crate) fn parse_address(socket_addr: SocketAddr) -> Address {
+    pub fn parse_address(socket_addr: SocketAddr) -> Address {
         match socket_addr {
             SocketAddr::V4(address) => Address::ipv4(address.ip().octets(), address.port()),
             SocketAddr::V6(address) => Address::ipv6(address.ip().octets(), address.port()),
@@ -43,7 +43,7 @@ impl TryFrom<&str> for Address {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub(crate) enum IPKind {
+pub enum IPKind {
     IPv4,
     IPv6,
 }

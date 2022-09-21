@@ -38,6 +38,15 @@ incremental = true
 name = "stun_server"
 path = "src/lib.rs"
 
+[[example]]
+name = "client"
+
+[[example]]
+name = "server"
+
+[[example]]
+name = "client_server"
+
 [[bench]]
 name = "main"
 harness = false
