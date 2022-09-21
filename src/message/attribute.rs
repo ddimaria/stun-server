@@ -36,9 +36,6 @@ use bytes::{Buf, Bytes, BytesMut};
 /// Attributes with type values between 0x8000 and 0xFFFF are comprehension-optional
 /// attributes, which means that those attributes can be ignored by the STUN agent if
 /// it does not understand them.
-///
-/// The set of STUN attribute types is maintained by IANA. The initial set defined by
-/// this specification is found in Section 17.3.
 #[derive(Eq, PartialEq, Debug)]
 pub(crate) enum Attribute<'a> {
     Username(&'a str),

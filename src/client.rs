@@ -9,7 +9,7 @@ use crate::{
     message::message::Message,
 };
 
-pub(crate) async fn client() -> Result<()> {
+pub async fn client() -> Result<()> {
     let client_addr: SocketAddr = (*CONFIG).client.parse()?;
     let server_addr: SocketAddr = (*CONFIG).server.parse()?;
     let socket = UdpSocket::bind(client_addr)

@@ -11,7 +11,7 @@ use bytes::{Bytes, BytesMut};
 use std::net::SocketAddr;
 use tokio::net::UdpSocket;
 
-pub(crate) async fn server() -> Result<()> {
+pub async fn server() -> Result<()> {
     let server_addr: SocketAddr = (*CONFIG).server.parse()?;
     let socket = UdpSocket::bind(server_addr)
         .await

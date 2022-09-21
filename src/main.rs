@@ -5,9 +5,9 @@ mod message;
 mod server;
 mod utils;
 
-use crate::client::client;
-use crate::error::{Error, Result};
-use crate::server::server;
+pub use crate::client::client;
+pub use crate::error::{Error, Result};
+pub use crate::server::server;
 use clap::Parser;
 
 #[derive(Parser, Debug)]

@@ -199,8 +199,8 @@ pub(crate) mod tests {
 
     #[test]
     fn it_decodes_a_binding_request() {
-        let mut bytes = Bytes::copy_from_slice(BINDING_REQUEST);
-        let message = Message::decode(&mut bytes).unwrap();
+        let mut encoded = Bytes::copy_from_slice(BINDING_REQUEST);
+        let message = Message::decode(&mut encoded).unwrap();
         let expected = binding_request();
 
         assert_eq!(message, expected);
@@ -208,8 +208,8 @@ pub(crate) mod tests {
 
     #[test]
     fn it_decodes_a_binding_response() {
-        let mut bytes = Bytes::copy_from_slice(BINDING_RESPONSE);
-        let message = Message::decode(&mut bytes).unwrap();
+        let mut encoded = Bytes::copy_from_slice(BINDING_RESPONSE);
+        let message = Message::decode(&mut encoded).unwrap();
         let expected = binding_response();
 
         assert_eq!(message, expected);
