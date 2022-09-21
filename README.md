@@ -17,7 +17,7 @@ cp .env.example .env
 Now update the values in .env as needed.
 
 ### Running the Server
-First, run the server, which will listen for incoming UDP packets and accept Binding Request messages:
+Running the server will listen for incoming UDP packets and accept Binding Request messages:
 
 ```shell
 RUST_LOG=info cargo run --example server
@@ -30,7 +30,7 @@ INFO  server > Started stun server on 0.0.0.0:8082
 ```
 
 ### Running the Client
-Next, run the client, which will instantly send a Binding Request message (UDP packet):
+Running the client will instantly send a Binding Request message (UDP packet):
 
 ```shell
 RUST_LOG=info cargo run --example client
@@ -44,7 +44,7 @@ INFO  client > sending binding request to the server: Message { class: Request, 
 ```
 
 ### Running the Client and Server Examples
-Next, run the client, which will instantly send a Binding Request message (UDP packet):
+To run the client and server at the same time time, where a binding request is sent and a binding response is received:
 
 ```shell
 RUST_LOG=info cargo run --example client_server
