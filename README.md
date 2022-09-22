@@ -5,6 +5,28 @@ This STUN server receives _Binding Request_ messages, validates them, and replie
 
 This is primarily a teaching tool for Rust systems programming (UDP, header encoding/decoding, ...etc.) in the WebRTC domain.
 
+## Benchmarks
+
+To run the Criterion benchmarks:
+
+```shell
+cargo bench
+```
+
+### Output
+
+```shell
+send and receive binding request and response
+                        time:   [180.04 ns 180.14 ns 180.22 ns]
+                        change: [-0.0304% +0.1749% +0.4260%] (p = 0.15 > 0.05)
+                        No change in performance detected.
+Found 9 outliers among 100 measurements (9.00%)
+  5 (5.00%) low severe
+  4 (4.00%) low mild
+```
+
+To view the HTML reports, navigate to [target/criterion/send-and-receive-binding-request-and-response/report/index.html](target/criterion/send-and-receive-binding-request-and-response/report/index.html).
+
 ## Examples
 
 ### Configuration

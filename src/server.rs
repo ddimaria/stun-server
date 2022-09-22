@@ -3,8 +3,8 @@ use crate::{
     error::{Error, Result},
     message::attribute::Attribute,
     message::class::Class,
-    message::message::Message,
     message::method::Method,
+    message::Message,
     utils::Address,
 };
 use bytes::{Bytes, BytesMut};
@@ -50,7 +50,7 @@ pub async fn server() -> Result<()> {
 
                 // send the encoded binding response to the client
                 socket
-                    .send_to(&mut buf.as_ref(), client_address)
+                    .send_to(buf.as_ref(), client_address)
                     .await
                     .map_err(|e| Error::BindingResponse(e.to_string()))?;
             }

@@ -6,7 +6,7 @@ use tokio::net::UdpSocket;
 use stun_server::{
     config::CONFIG,
     error::{Error, Result},
-    message::message::Message,
+    message::Message,
 };
 
 #[allow(dead_code)]

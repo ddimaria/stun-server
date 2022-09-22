@@ -1,24 +1,25 @@
+//! The message type field is decomposed further into the following structure:
+//!
+//! 0                 1
+//! 2  3  4 5 6 7 8 9 0 1 2 3 4 5
+//! +--+--+-+-+-+-+-+-+-+-+-+-+-+-+
+//! |M |M |M|M|M|C|M|M|M|C|M|M|M|M|
+//! |11|10|9|8|7|1|6|5|4|0|3|2|1|0|
+//! +--+--+-+-+-+-+-+-+-+-+-+-+-+-+
+//!
+//! Here the bits in the message type field are shown as most significant (M11)
+//! through least significant (M0). M11 through M0 represent a 12-bit encoding
+//! of the method. C1 and C0 represent a 2-bit encoding of the class. A class
+//! of 0b00 is a request, a class of 0b01 is an indication, a class of 0b10
+//! is a success response, and a class of 0b11 is an error response. This
+//! specification defines a single method, Binding. The method and class are
+//! orthogonal, so that for each method, a request, success response, error response,
+//! and indication are possible for that method. Extensions defining new methods
+//! MUST indicate which classes are permitted for that method.
+
 use crate::error::{Error, Result};
 use std::convert::{TryFrom, TryInto};
 
-/// The message type field is decomposed further into the following structure:
-///
-/// 0                 1
-/// 2  3  4 5 6 7 8 9 0 1 2 3 4 5
-/// +--+--+-+-+-+-+-+-+-+-+-+-+-+-+
-/// |M |M |M|M|M|C|M|M|M|C|M|M|M|M|
-/// |11|10|9|8|7|1|6|5|4|0|3|2|1|0|
-/// +--+--+-+-+-+-+-+-+-+-+-+-+-+-+
-///
-/// Here the bits in the message type field are shown as most significant (M11)
-/// through least significant (M0). M11 through M0 represent a 12-bit encoding
-/// of the method. C1 and C0 represent a 2-bit encoding of the class. A class
-/// of 0b00 is a request, a class of 0b01 is an indication, a class of 0b10
-/// is a success response, and a class of 0b11 is an error response. This
-/// specification defines a single method, Binding. The method and class are
-/// orthogonal, so that for each method, a request, success response, error response,
-/// and indication are possible for that method. Extensions defining new methods
-/// MUST indicate which classes are permitted for that method.
 #[derive(Debug, PartialEq)]
 pub enum Class {
     Request,
@@ -62,9 +63,9 @@ impl TryFrom<u16> for Class {
     }
 }
 
-impl Into<u16> for &Class {
-    fn into(self) -> u16 {
-        match self {
+impl From<&Class> for u16 {
+    fn from(class: &Class) -> u16 {
+        match class {
             Class::Request => 0b00,
             Class::Indication => 0b01,
             Class::SuccessResponse => 0b10,
