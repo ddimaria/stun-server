@@ -48,5 +48,5 @@ name = "server"
 name = "client_server"
 
 [[bench]]
-name = "main"
+name = "bench"
 harness = false
